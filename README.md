@@ -4,7 +4,7 @@ TaskFlow, küçük yazılım ekipleri için geliştirilmiş Trello benzeri bir g
 Kullanıcılar hesap oluşturabilir, board oluşturabilir, sütun ve kart ekleyebilir, kartları sürükle-bırak ile sütunlar arasında taşıyabilir.
 
 ## Canlı Demo
-Vercel deploy sonrası eklenecek.
+https://taskflow-kanban-three.vercel.app
 
 ## Özellikler
 
