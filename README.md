@@ -7,8 +7,6 @@ A Trello-style task management web app built as a **48-hour MVP**. TaskFlow supp
 **Demo:** https://taskflow-kanban-three.vercel.app  
 **Source:** https://github.com/ozandokur/taskflow-kanban
 
-> The demo URL is from the original project documentation. Deployment availability has not been independently verified.
-
 ## Key features
 
 - Email/password registration and authentication via Supabase
