@@ -1,105 +1,67 @@
-# TaskFlow — Kanban Proje Yönetim Tahtası
+# TaskFlow — Kanban Project Management App
 
-TaskFlow, küçük yazılım ekipleri için geliştirilmiş Trello benzeri bir görev yönetim uygulamasıdır.  
-Kullanıcılar hesap oluşturabilir, board oluşturabilir, sütun ve kart ekleyebilir, kartları sürükle-bırak ile sütunlar arasında taşıyabilir.
+A Trello-style task management web app built as a **48-hour MVP**. TaskFlow supports account registration and sign-in, individual boards, columns, and cards with drag-and-drop ordering that persists between sessions.
 
-## Canlı Demo
-https://taskflow-kanban-three.vercel.app
+**Tech stack:** Next.js 14 · React · TypeScript · Supabase Auth + PostgreSQL · dnd-kit · Vercel
 
-## Özellikler
+**Demo:** https://taskflow-kanban-three.vercel.app  
+**Source:** https://github.com/ozandokur/taskflow-kanban
 
-- Kullanıcı kayıt / giriş
-- Board oluşturma
-- Sütun ekleme ve yeniden adlandırma
-- Kart ekleme
-- Kart başlık ve açıklama düzenleme
-- Kartları sürükle-bırak ile taşıma
-- Sayfa yenilendiğinde sıralamanın korunması
-- Mobil uyumlu arayüz
+> The demo URL is from the original project documentation. Deployment availability has not been independently verified.
 
-## Kullanılan Teknolojiler
+## Key features
 
-- Next.js
-- TypeScript
-- Supabase Auth
-- Supabase Postgres
-- dnd-kit
-- CSS tabanlı özel arayüz stilleri
-- Vercel
+- Email/password registration and authentication via Supabase
+- Create boards and organize tasks into columns
+- Create and edit card titles and descriptions
+- Move cards across columns using drag-and-drop
+- Persist card positions in PostgreSQL so ordering survives refreshes
+- Responsive interface for desktop and mobile devices
 
-## Teknik Kararlar
+## Implementation details
 
-### Neden dnd-kit?
-Bu projede drag-and-drop için `dnd-kit` tercih edildi.
+### Persistent drag-and-drop
 
-Nedenleri:
-- aktif olarak geliştiriliyor
-- modern React yapısına uygun
-- mobil cihazlarda dokunmatik etkileşimi destekliyor
-- Trello benzeri board yapılarında esnek kontrol sağlıyor
+TaskFlow uses `@dnd-kit/core` and `@dnd-kit/sortable` for card interactions. Each card stores a `position` value; when cards move between columns or change order, their positions are updated in the database.
 
-### Neden Supabase?
-Gerçek kullanıcı yönetimi ve kalıcı veri saklama ihtiyacı için Supabase kullanıldı.
+### Authentication and storage
 
-Sağladıkları:
-- email/password authentication
-- Postgres veritabanı
-- kullanıcı bazlı veri erişimi
-- Row Level Security ile güvenli veri modeli
+- Supabase Auth handles identity and sessions.
+- Supabase PostgreSQL stores user profiles, boards, columns, and cards.
+- The application uses the `@supabase/ssr` client integration in Next.js.
+- User-scoped access should be enforced using **Row Level Security (RLS)** in the Supabase project.
 
-### Sıralama nasıl korunuyor?
-Her kart için veritabanında `position` alanı tutulur.  
-Kart başka bir sütuna taşındığında veya yeniden sıralandığında ilgili sütundaki kartlar güncellenir.  
-Bu sayede sayfa yenilense bile kartlar veritabanından aynı sırayla geri gelir.
+### Data model
 
-### 48 saatlik önceliklendirme
-Bu projede kapsam kontrollü tutuldu.  
-Odak noktası:
-- auth
-- board / column / card veri modeli
-- drag-and-drop
-- kalıcı sıralama
-- responsive kullanım
+| Table | Main fields |
+| --- | --- |
+| `profiles` | `id`, `full_name`, `email`, `created_at` |
+| `boards` | `id`, `owner_id`, `title`, `created_at` |
+| `columns` | `id`, `board_id`, `title`, `position`, `created_at` |
+| `cards` | `id`, `board_id`, `column_id`, `title`, `description`, `position`, `created_at`, `updated_at` |
 
-İlk sürüm dışında bırakılanlar:
-- gerçek zamanlı birlikte düzenleme
-- board paylaşımı
-- aktivite geçmişi
-- due date / assignee / comments gibi ileri seviye özellikler
+## Run locally
 
-## Veri Modeli
+Requires Node.js, npm, and a configured Supabase project.
 
-### profiles
-- id
-- full_name
-- email
-- created_at
-
-### boards
-- id
-- owner_id
-- title
-- created_at
-
-### columns
-- id
-- board_id
-- title
-- position
-- created_at
-
-### cards
-- id
-- board_id
-- column_id
-- title
-- description
-- position
-- created_at
-- updated_at
-
-## Kurulum
-
-### 1. Paketleri yükle
 ```bash
-npm install
+git clone https://github.com/ozandokur/taskflow-kanban.git
+cd taskflow-kanban
+npm ci
+cp .env.example .env.local
+npm run dev
+```
+
+Set your own `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` values in `.env.local`, then visit **http://localhost:3000**.
+
+**Database setup:** The repository does not include a complete Supabase SQL migration or RLS policy bundle. Set up the four tables and user-scoped RLS policies in your Supabase project before using the app. Do not put a Supabase service-role key in a `NEXT_PUBLIC_*` variable.
+
+## MVP boundaries
+
+The original 48-hour scope deliberately prioritized authentication, core board/card workflows, responsive layout, and persisted ordering.
+
+Not included in the MVP: real-time collaboration, board sharing, activity history, due dates, assignees, and comments. Those are potential future enhancements, **not current features**.
+
+## What this project demonstrates
+
+Full-stack TypeScript development, authentication integration, relational data modeling, stateful drag-and-drop interactions, and prioritization under a strict development deadline.
